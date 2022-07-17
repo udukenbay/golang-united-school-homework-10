@@ -28,8 +28,20 @@ func Start(host string, port int) {
 
 	router.HandleFunc("/bad", handleBad).Methods(http.MethodGet)
 	router.HandleFunc("/name/{user}", handleName).Methods(http.MethodGet)
+	router.HandleFunc("/data", handlePost).Methods(http.MethodPost)
 
 	log.Fatalln(http.ListenAndServe(":8081", router))
+}
+
+func handlePost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		fmt.Fprintf(w, "invalid_http_method")
+		return
+	}
+
+	r.ParseForm()
+	fmt.Fprintf(w, "I got message:\n"+r.Form.Get("name"))
 }
 
 func handleBad(w http.ResponseWriter, r *http.Request) {
