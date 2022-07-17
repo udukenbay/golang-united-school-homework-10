@@ -25,6 +25,29 @@ func Start(host string, port int) {
 	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), router); err != nil {
 		log.Fatal(err)
 	}
+
+	router.HandleFunc("/", handleRoot).Methods(http.MethodGet)
+	router.HandleFunc("/bad", handleBad).Methods(http.MethodGet)
+	router.HandleFunc("/name/{user}", handleName).Methods(http.MethodGet)
+
+	log.Fatalln(http.ListenAndServe(":8081", router))
+}
+
+func handleRoot(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Hello, web")
+}
+
+func handleBad(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusBadGateway)
+	w.Write([]byte("Oh, something bad happened on server side. Please contact the developers"))
+}
+
+func handleName(w http.ResponseWriter, r *http.Request) {
+	name := "mister X"
+	if p, ok := mux.Vars(r)["user"]; ok {
+		name = p
+	}
+	fmt.Fprintf(w, "Hello, %s!", name)
 }
 
 //main /** starts program, gets HOST:PORT param and calls Start func.
