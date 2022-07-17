@@ -26,20 +26,14 @@ func Start(host string, port int) {
 		log.Fatal(err)
 	}
 
-	router.HandleFunc("/", handleRoot).Methods(http.MethodGet)
 	router.HandleFunc("/bad", handleBad).Methods(http.MethodGet)
 	router.HandleFunc("/name/{user}", handleName).Methods(http.MethodGet)
 
 	log.Fatalln(http.ListenAndServe(":8081", router))
 }
 
-func handleRoot(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello, web")
-}
-
 func handleBad(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusBadGateway)
-	w.Write([]byte("Oh, something bad happened on server side. Please contact the developers"))
 }
 
 func handleName(w http.ResponseWriter, r *http.Request) {
